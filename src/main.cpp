@@ -22,7 +22,7 @@ int main()
     TextureManager::setDirectory(dir);
 
     Board board;
-    board.buildGameBoard(WIDTH, LENGTH);
+    board.buildGameBoard(LENGTH, WIDTH);
     // board.displayBoardData();                  //TESTING
 
     sf::RenderWindow window(sf::VideoMode(LENGTH, WIDTH), "Minesweeper");

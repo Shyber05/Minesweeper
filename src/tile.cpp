@@ -1,0 +1,142 @@
+#include <SFML/Graphics.hpp>
+#include <vector>
+#include <iostream>
+#include "tile.h"
+#include "textureManager.h"
+#include "board.h"
+
+//Constructor
+Tile::Tile()
+{
+    State state = HIDDEN;
+    std::string spriteImg = "tile_hidden";
+    setState(state);
+}
+
+Tile::Tile(sf::Vector2f vector, std::string image)
+{
+    setPos(vector);
+    setSprite(image);
+}
+
+// Functionality
+void Tile::draw(sf::RenderWindow& window)
+{
+  window.draw(m_sprite); 
+  if (overlay)
+    window.draw(m_overlaySprite);
+}
+
+void Tile::setAdjacentMines(int numOfMines)
+{
+    adjacentMines += numOfMines;
+}
+
+// TODO finish function
+void Tile::leftClick()
+{
+    if (isMine())
+    {
+        //Game Over
+      setState(State::EXPLOADED);
+        // TODO game over condition
+    }
+    else if (isMine() == false)
+    {
+      setState(State::REVEALED);
+    }
+
+    //TESTING  
+    // std::cout <<    "x: " << (m_sprite.getPosition().x / 32) << " "
+                    // "y: " << (m_sprite.getPosition().y / 32) << "\n";
+    // std::cout << "Mine: " << mine << " \n";
+}
+
+void Tile::rightClick()
+{
+  if (getState() == State::HIDDEN) 
+  {
+    overlay = true;
+    setState(State::FLAGGED);
+  }
+  else if (getState() == State::FLAGGED){
+    setState(State::HIDDEN);
+  }
+}
+
+bool Tile::isMine()
+{
+    if (mine == 1)
+    {
+        //Game over
+        return true;
+    }
+    return false;
+}
+
+// Setters
+void Tile::setMine(int val)
+{
+    if (val == 0 || val == 1) {mine = val;}
+    else{
+        std::cout << "Not a valid option \n Needs to be (0 or 1) ";
+    }
+}
+
+void Tile::setPos(sf::Vector2f vector)
+{
+    m_sprite.setPosition(vector);
+    m_overlaySprite.setPosition(vector);
+}
+
+void Tile::setSprite(std::string imagePath)
+{
+    m_sprite.setTexture(TextureManager::getTexture(imagePath));
+}
+
+void Tile::setOverlaySprite(std::string imagePath)
+{
+    m_overlaySprite.setTexture(TextureManager::getTexture(imagePath));
+}
+
+void Tile::setState(Tile::State state)
+{
+    std::string spriteImg;
+    if (state == HIDDEN){
+        overlay = false;
+        spriteImg = "tile_hidden";
+    
+    }
+    else if (state == REVEALED){
+        //setOverlaySprite()      // Needs to be number of surrounding mines
+        spriteImg = "tile_revealed";
+    }
+    else if (state == FLAGGED){
+        spriteImg = "tile_hidden";
+        setOverlaySprite("flag");
+    }
+    else if (state == EXPLOADED){
+        spriteImg = "tile_revealed";
+        setOverlaySprite("mine");
+    }
+    currentState = state;
+    setSprite(spriteImg);
+}
+
+// Getters
+sf::Sprite Tile::getSprite()
+{
+    return m_sprite;
+}
+
+Tile::State Tile::getState()
+{
+    return currentState;
+}
+
+sf::Vector2f Tile::getPos()
+{
+    //Returns the position of the tile as a sf::vector2f
+    return m_position;
+}
+
