@@ -107,15 +107,19 @@ void Board::buildGameBoard(int length, int width)
 
   //TODO fix test buttons
     // Creates the game buttons     Doesn't WORK (-_-)
-    Tile Smiley(sf::Vector2f((length*0.50),(width-80)), "face_happy");
-    Tile Test1(sf::Vector2f((length*0.60),(width-80)), "test_1");
-    Tile Test2(sf::Vector2f((length*0.70),(width-80)), "test_2");
-    Tile Test3(sf::Vector2f((length*0.80),(width-80)), "test_3");
+    Tile Smiley(sf::Vector2f((length*0.45),(width-87)), "face_happy");
+    Tile Test1(sf::Vector2f((length*0.65),(width-87)), "test_1");
+    Tile Test2(sf::Vector2f((length*0.75),(width-87)), "test_2");
+    Tile Test3(sf::Vector2f((length*0.85),(width-87)), "test_3");
+    Tile Debug(sf::Vector2f((length*0.55),(width-87)), "debug");
+    Tile Flags(sf::Vector2f((length*0.05),(width-87)), "digits");
 
     testButtons.emplace("Smiley", Smiley);
     testButtons.emplace("Test1", Test1);
     testButtons.emplace("Test2", Test2);
     testButtons.emplace("Test3", Test3);
+    testButtons.emplace("Debug", Debug);
+    testButtons.emplace("Flags", Flags);
 }
 
 void Board::displayBoardData()
@@ -131,10 +135,11 @@ void Board::displayBoardData()
     // {1 (mine) or 0 (not a mine)}
     for (int i=0; i <= boardSize; i++)
     {
+    //TODO fix but, Doesn't account for first value
         std::cout << boardData[i] << " ";
-        if (((i % numOfCols) == 0 )){
+        if (((i % numOfCols) == 0)){
 
-            // std::cout << "Row: " << (i / numOfCols);                  // TESTING
+            std::cout << "Row: " << (i / numOfCols);                  // TESTING
             std::cout <<"\n";
         }
     }
@@ -153,6 +158,8 @@ void Board::renderBoard(sf::RenderWindow& window)
     testButtons["Test1"].draw(window);
     testButtons["Test2"].draw(window);
     testButtons["Test3"].draw(window);
+    testButtons["Debug"].draw(window);
+    testButtons["Flags"].draw(window);
 }
 
 Tile Board::boardClick(sf::RenderWindow& window, bool Lclick)
@@ -197,4 +204,8 @@ std::vector<Tile> Board::getGameBoard()
     return gameboard;
 }
 
+void Board::displayAllMines()
+{
+    
+};
 

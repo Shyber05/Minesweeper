@@ -35,16 +35,17 @@ void Tile::setAdjacentMines(int numOfMines)
 // TODO finish function
 void Tile::leftClick()
 {
+  if (getState() != State::FLAGGED)
+  {
     if (isMine())
     {
-        //Game Over
-      setState(State::EXPLOADED);
-        // TODO game over condition
+      setState(State::EXPLOADED);   //Game Over
     }
     else if (isMine() == false)
     {
       setState(State::REVEALED);
     }
+  }
 
     //TESTING  
     // std::cout <<    "x: " << (m_sprite.getPosition().x / 32) << " "
@@ -56,7 +57,6 @@ void Tile::rightClick()
 {
   if (getState() == State::HIDDEN) 
   {
-    overlay = true;
     setState(State::FLAGGED);
   }
   else if (getState() == State::FLAGGED){
@@ -96,6 +96,7 @@ void Tile::setSprite(std::string imagePath)
 
 void Tile::setOverlaySprite(std::string imagePath)
 {
+    overlay = true;
     m_overlaySprite.setTexture(TextureManager::getTexture(imagePath));
 }
 
@@ -108,7 +109,7 @@ void Tile::setState(Tile::State state)
     
     }
     else if (state == REVEALED){
-        //setOverlaySprite()      // Needs to be number of surrounding mines
+        setOverlaySprite("number_1");      // Needs to be number of surrounding mines
         spriteImg = "tile_revealed";
     }
     else if (state == FLAGGED){
