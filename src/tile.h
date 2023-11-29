@@ -10,9 +10,9 @@ class Tile
 public:
     //Constructors
     Tile();
-    Tile(sf::Vector2f, std::string);    // Creates a tile at given position
+    Tile(std::string);    // Creates a tile with specific Sprite
 
-    enum State{FLAGGED, HIDDEN, REVEALED, EXPLOADED};        // Current state of the UI
+    enum State{FLAGGED, HIDDEN, REVEALED, EXPLODED};        // Current state of the UI
 
     // Setters
     void setState(State state);

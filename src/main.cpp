@@ -83,8 +83,8 @@ void eventHandling(sf::RenderWindow& window, Board& board)
 
       
             // TESTING
-            // std::cout << "x cord:" << x_cord << std::endl; 
-            // std::cout << "y cord:" << y_cord << "\n\n"; 
+            std::cout << "x cord:" << x_cord << std::endl; 
+            std::cout << "y cord:" << y_cord << "\n\n"; 
         }
     }
 }

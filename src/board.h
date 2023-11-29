@@ -25,7 +25,8 @@ public:
     bool checkWin();
     void tileNeighborMines();
     int addAdjacentMines(int i);
-    void debugButton(sf::RenderWindow& window);
+    void debugButton();
+    void restartGame();
 
     //Getters
     int getRows();

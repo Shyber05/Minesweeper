@@ -13,9 +13,9 @@ Tile::Tile()
     setState(state);
 }
 
-Tile::Tile(sf::Vector2f vector, std::string image)
+Tile::Tile(std::string image)
 {
-    setPos(vector);
+    // setPos(vector);
     setSprite(image);
 }
 
@@ -39,7 +39,7 @@ void Tile::leftClick()
   {
     if (isMine())
     {
-      setState(State::EXPLOADED);   //Game Over
+      setState(State::EXPLODED);   //Game Over
     }
     else if (isMine() == false)
     {
@@ -49,8 +49,8 @@ void Tile::leftClick()
 
     //TESTING  
     // std::cout <<    "x: " << (m_sprite.getPosition().x / 32) << " "
-                    // "y: " << (m_sprite.getPosition().y / 32) << "\n";
-    // std::cout << "Mine: " << mine << " \n";
+    //                 "y: " << (m_sprite.getPosition().y / 32) << "\n";
+    std::cout << "Mine: " << mine << " \n";
 }
 
 void Tile::rightClick()
@@ -116,7 +116,7 @@ void Tile::setState(Tile::State state)
         spriteImg = "tile_hidden";
         setOverlaySprite("flag");
     }
-    else if (state == EXPLOADED){
+    else if (state == EXPLODED){
         spriteImg = "tile_revealed";
         setOverlaySprite("mine");
     }
