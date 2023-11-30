@@ -36,12 +36,12 @@ public:
     void setAdjacentMines(int numOfMines);      
     int mine;
     bool overlay = false;    // Determines whether to draw spites on each other
+    sf::Sprite m_overlaySprite;
 
 private:
     int adjacentMines = 0;
     State currentState;
     sf::Vector2f m_position;
     sf::Sprite m_sprite;
-    sf::Sprite m_overlaySprite;
     
 };

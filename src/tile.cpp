@@ -48,8 +48,8 @@ void Tile::leftClick()
   }
 
     //TESTING  
-    // std::cout <<    "x: " << (m_sprite.getPosition().x / 32) << " "
-    //                 "y: " << (m_sprite.getPosition().y / 32) << "\n";
+    std::cout <<    "x: " << (m_sprite.getPosition().x / 32) << " "
+                    "y: " << (m_sprite.getPosition().y / 32) << "\n";
     std::cout << "Mine: " << mine << " \n";
 }
 
@@ -106,7 +106,6 @@ void Tile::setState(Tile::State state)
     if (state == HIDDEN){
         overlay = false;
         spriteImg = "tile_hidden";
-    
     }
     else if (state == REVEALED){
         setOverlaySprite("number_1");      // Needs to be number of surrounding mines

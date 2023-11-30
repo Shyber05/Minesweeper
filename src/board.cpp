@@ -209,23 +209,30 @@ Board::boardClick(sf::RenderWindow& window, bool Lclick)
     }
   }
   if (smiley.getGlobalBounds().contains(translatedPos)) {
-    std::cout << "Smiley was pressed" << std::endl;
+    // std::cout << "Smiley was pressed" << std::endl;
+    restartGame();
   } else if (test_1.getGlobalBounds().contains(translatedPos)) {
-    std::cout << "Test 1 was pressed" << std::endl;
+    // std::cout << "Test 1 was pressed" << std::endl;
+    restartGame();
+    createBoardData("testboard1");
   } else if (test_2.getGlobalBounds().contains(translatedPos)) {
-    std::cout << "Test 2 was pressed" << std::endl;
+    // std::cout << "Test 2 was pressed" << std::endl;
+    restartGame();
+    createBoardData("testboard2");
   } else if (test_3.getGlobalBounds().contains(translatedPos)) {
-    std::cout << "Test 3 was pressed" << std::endl;
+    // std::cout << "Test 3 was pressed" << std::endl;
+    restartGame();
+    createBoardData("testboard3");
   } else if (debug.getGlobalBounds().contains(translatedPos)) {
     // std::cout << "Debug was pressed" << std::endl;
-    debugButton();
+    displayMines();
   }
 
   return gameboard[0];
 }
 
 void
-Board::debugButton() {
+Board::displayMines() {
   // Sets all the mines on the board to State::EXPLODED
   for (int i=0; i < getGameBoard().size(); i++)
   {
@@ -236,15 +243,17 @@ Board::debugButton() {
 
 void
 Board::restartGame(){
-  
+  //Resets all the tiles and reloads the board
+  for (int i=0; i < getGameBoard().size(); i++)
+  {
+    gameboard[i].setMine(0);    //Make the board blank
+    gameboard[i].setState(Tile::State::HIDDEN);
+    testButtons["Smiley"].setSprite("face_happy");
+  }
+  createBoardData();    // Loads in a fresh config (random nums);
+  reset = true;
+  displayBoardData();
 }
-
-
-//TODO write function
-void
-Board::displayAllMines(){
-};
-
 
 
 //==============================Accessors==================================

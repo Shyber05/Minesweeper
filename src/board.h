@@ -25,8 +25,8 @@ public:
     bool checkWin();
     void tileNeighborMines();
     int addAdjacentMines(int i);
-    void debugButton();
-    void restartGame();
+    void displayMines();
+    void restartGame();      // The random flag changes the loaded config
 
     //Getters
     int getRows();
