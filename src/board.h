@@ -26,7 +26,7 @@ public:
     void tileNeighborMines();
     int addAdjacentMines(int i);
     void displayMines();
-    void restartGame();      // The random flag changes the loaded config
+    void restartGame(std::string boardType);      // The random flag changes the loaded config
 
     //Getters
     int getRows();

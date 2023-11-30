@@ -11,7 +11,7 @@
 Board::Board()
 {
   setBoardConfig();
-  createBoardData();
+  createBoardData("random");
 
   //====================================TESTING=================================
   // createBoardData("lots_o_mines");
@@ -65,21 +65,36 @@ Board::createBoardData()
 void
 Board::createBoardData(std::string boardFile)
 {
-  // 2. Create from a .brd file
-  std::string dir = "boards/"; // TESTING
-  std::string ext = ".brd";
 
-  std::string filePath = dir + boardFile + ext;
-  std::ifstream inputBoard;
-  inputBoard.open(filePath);
+  if (boardFile == "random") {
+    // 1. Create from board attributes
+    boardData.resize(boardSize);
 
-  char val;
-  while (inputBoard.get(val)) {
-    // Subtract by 48 to get the ASCII char to int
-    if (val == '1') {
-      boardData.push_back(((int)val - 48));
-    } else if (val == '0') {
-      boardData.push_back(((int)val - 48));
+    // Picks positions ar random and places mine
+    for (int mines = 0; mines <= (numOfMines); mines++) {
+      int pos = RandomGen::intGenerator(
+        0, (boardSize)); // Random number between 0 - size of board
+      if (boardData[pos] == 0) {
+        boardData[pos] = 1;
+      }
+    }
+  } else {
+    // 2. Create from a .brd file
+    std::string dir = "boards/"; // TESTING
+    std::string ext = ".brd";
+
+    std::string filePath = dir + boardFile + ext;
+    std::ifstream inputBoard;
+    inputBoard.open(filePath);
+
+    char val;
+    while (inputBoard.get(val)) {
+      // Subtract by 48 to get the ASCII char to int
+      if (val == '1') {
+        boardData.push_back(((int)val - 48));
+      } else if (val == '0') {
+        boardData.push_back(((int)val - 48));
+      }
     }
   }
 }
@@ -127,7 +142,7 @@ Board::buildGameBoard(int length, int width)
   Test3.setPos(sf::Vector2f((float)(spriteRect.height * 11.5),
                             (float)(spriteRect.width * 8)));
 
-  //TODO need to fix the values above so they aren't hard coded
+  // TODO need to fix the values above so they aren't hard coded
 
   // TODO, need to cut this sprite into sections then render
   Tile Flags("digits");
@@ -210,19 +225,20 @@ Board::boardClick(sf::RenderWindow& window, bool Lclick)
   }
   if (smiley.getGlobalBounds().contains(translatedPos)) {
     // std::cout << "Smiley was pressed" << std::endl;
-    restartGame();
+    restartGame("random");
+    // createBoardData("random");
   } else if (test_1.getGlobalBounds().contains(translatedPos)) {
     // std::cout << "Test 1 was pressed" << std::endl;
-    restartGame();
-    createBoardData("testboard1");
+    restartGame("testboard1");
+    // createBoardData("testboard1");
   } else if (test_2.getGlobalBounds().contains(translatedPos)) {
     // std::cout << "Test 2 was pressed" << std::endl;
-    restartGame();
-    createBoardData("testboard2");
+    restartGame("testboard2");
+    // createBoardData("testboard2");
   } else if (test_3.getGlobalBounds().contains(translatedPos)) {
     // std::cout << "Test 3 was pressed" << std::endl;
-    restartGame();
-    createBoardData("testboard3");
+    restartGame("testboard3");
+    // createBoardData("testboard3");
   } else if (debug.getGlobalBounds().contains(translatedPos)) {
     // std::cout << "Debug was pressed" << std::endl;
     displayMines();
@@ -232,29 +248,34 @@ Board::boardClick(sf::RenderWindow& window, bool Lclick)
 }
 
 void
-Board::displayMines() {
+Board::displayMines()
+{
   // Sets all the mines on the board to State::EXPLODED
-  for (int i=0; i < getGameBoard().size(); i++)
-  {
+  for (int i = 0; i < getGameBoard().size(); i++) {
     if (gameboard[i].isMine())
       gameboard[i].setState(Tile::State::EXPLODED);
   }
 }
 
 void
-Board::restartGame(){
-  //Resets all the tiles and reloads the board
-  for (int i=0; i < getGameBoard().size(); i++)
-  {
-    gameboard[i].setMine(0);    //Make the board blank
+Board::restartGame(std::string boardType)
+{
+  // Resets all the tiles and reloads the board
+
+  // resets all the data in the board
+  // for (int i = 0; i < boardData.size(); i++) {
+  //   boardData[i] = 0;
+  // }
+  boardData.clear();
+
+  createBoardData(boardType); // Loads in a fresh config (random nums);
+  for (int i = 0; i < getGameBoard().size(); i++) {
+    gameboard[i].setMine(boardData[i]); // Make the board blank
     gameboard[i].setState(Tile::State::HIDDEN);
     testButtons["Smiley"].setSprite("face_happy");
   }
-  createBoardData();    // Loads in a fresh config (random nums);
-  reset = true;
   displayBoardData();
 }
-
 
 //==============================Accessors==================================
 int
@@ -280,4 +301,3 @@ Board::getGameBoard()
 {
   return gameboard;
 }
-

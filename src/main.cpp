@@ -55,8 +55,6 @@ launch(sf::RenderWindow& window, int LENGTH, int WIDTH)
     // This is where we will draw the game
     board.renderBoard(window);
 
-
-
     // Ends the current frame
     window.display();
   }
