@@ -47,26 +47,11 @@ Board::setBoardConfig()
 }
 
 void
-Board::createBoardData()
-{
-  // 1. Create from board attributes
-  boardData.resize(boardSize);
-
-  // Picks positions ar random and places mine
-  for (int mines = 0; mines <= (numOfMines); mines++) {
-    int pos = RandomGen::intGenerator(
-      0, (boardSize)); // Random number between 0 - size of board
-    if (boardData[pos] == 0) {
-      boardData[pos] = 1;
-    }
-  }
-}
-
-void
 Board::createBoardData(std::string boardFile)
 {
 
-  if (boardFile == "random") {
+  if (boardFile == "random") 
+  {
     // 1. Create from board attributes
     boardData.resize(boardSize);
 
@@ -76,6 +61,10 @@ Board::createBoardData(std::string boardFile)
         0, (boardSize)); // Random number between 0 - size of board
       if (boardData[pos] == 0) {
         boardData[pos] = 1;
+      }
+      else 
+      {
+        mines--; // If it lands on a mine (1) don't add 1
       }
     }
   } else {
@@ -111,11 +100,14 @@ Board::buildGameBoard(int length, int width)
       sf::IntRect spriteRect =
         (tile.getSprite()).getTextureRect(); // Gets the rectangle of the tile
       tile.setPos(sf::Vector2f(
-        (float)(spriteRect.height * col),
-        (float)(spriteRect.width * row))); // sets the position of the tile
+        // (float)(spriteRect.height * col),
+        // (float)(spriteRect.width * row))); // sets the position of the tile
                                            // based on the previous command
+        (spriteRect.height * col),
+        (spriteRect.width * row))); // sets the position of the tile
       gameboard.push_back(tile);
       i++;
+      
     }
   }
 
@@ -130,6 +122,7 @@ Board::buildGameBoard(int length, int width)
     (Smiley.getSprite())
       .getTextureRect(); // Gets the rectangle for the test buttons
 
+  // TODO need to fix the values above so they aren't hard coded
   // Set position of these similarly sized buttons (Hard Coded)
   Smiley.setPos(sf::Vector2f((float)(spriteRect.height * 6),
                              (float)(spriteRect.width * 8)));
@@ -142,21 +135,32 @@ Board::buildGameBoard(int length, int width)
   Test3.setPos(sf::Vector2f((float)(spriteRect.height * 11.5),
                             (float)(spriteRect.width * 8)));
 
-  // TODO need to fix the values above so they aren't hard coded
+  // Loads in one long texture then splits it up into different sprites
+  Tile Digit0("digits");
+  Tile Digit1("digits");
+  Tile Digit2("digits");
+  
+  Digit0.splitDigitSprite(0);
+  Digit1.splitDigitSprite(0);
+  Digit2.splitDigitSprite(0);
 
-  // TODO, need to cut this sprite into sections then render
-  Tile Flags("digits");
-  Flags.setPos(sf::Vector2f((float)(spriteRect.height * 0.3),
+  
+  Digit0.setPos(sf::Vector2f((float)(spriteRect.height * 0.3),
+                            (float)(spriteRect.width * 8)));
+  Digit1.setPos(sf::Vector2f((float)(spriteRect.height * 0.6),
+                            (float)(spriteRect.width * 8)));
+  Digit2.setPos(sf::Vector2f((float)(spriteRect.height * 0.9),
                             (float)(spriteRect.width * 8)));
 
   // sf::Vector2f((length*0.73),(width-87)),
-
   testButtons.emplace("Smiley", Smiley);
   testButtons.emplace("Test1", Test1);
   testButtons.emplace("Test2", Test2);
   testButtons.emplace("Test3", Test3);
   testButtons.emplace("Debug", Debug);
-  testButtons.emplace("Flags", Flags);
+  testButtons.emplace("Remaining0", Digit0);
+  testButtons.emplace("Remaining1", Digit1);
+  testButtons.emplace("Remaining2", Digit2);
 }
 
 void
@@ -185,17 +189,19 @@ void
 Board::renderBoard(sf::RenderWindow& window)
 {
   // Renders the board to a window
-  for (int i = 0; i < (gameboard.size()); i++) {
+  for (int i = 0; i < boardSize; i++) {
     gameboard[i].draw(window);
   }
-
-  // Renders game buttons (Not working)
+       
+  // Renders game buttons 
   testButtons["Smiley"].draw(window);
   testButtons["Test1"].draw(window);
   testButtons["Test2"].draw(window);
   testButtons["Test3"].draw(window);
   testButtons["Debug"].draw(window);
-  testButtons["Flags"].draw(window);
+  testButtons["Remaining0"].draw(window);
+  testButtons["Remaining1"].draw(window);
+  testButtons["Remaining2"].draw(window);
 }
 
 Tile
@@ -219,6 +225,7 @@ Board::boardClick(sf::RenderWindow& window, bool Lclick)
         gameboard[i].leftClick();
       } else {
         gameboard[i].rightClick();
+        numOfFlags++;
       }
       return (gameboard[i]);
     }
@@ -269,7 +276,7 @@ Board::restartGame(std::string boardType)
   boardData.clear();
 
   createBoardData(boardType); // Loads in a fresh config (random nums);
-  for (int i = 0; i < getGameBoard().size(); i++) {
+  for (int i = 0; i <= gameboard.size(); i++) {
     gameboard[i].setMine(boardData[i]); // Make the board blank
     gameboard[i].setState(Tile::State::HIDDEN);
     testButtons["Smiley"].setSprite("face_happy");

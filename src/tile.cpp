@@ -1,4 +1,5 @@
 #include <SFML/Graphics.hpp>
+#include <SFML/Graphics/Sprite.hpp>
 #include <vector>
 #include <iostream>
 #include "tile.h"
@@ -72,6 +73,50 @@ bool Tile::isMine()
         return true;
     }
     return false;
+}
+
+void Tile::splitDigitSprite(int digit)
+{
+  // Splites the digit texture into appropriate value
+  // Each digits should be 21 x 32 pixels, so each digit should be an offset of 21 (the width)
+  int offset = 21;
+  int widthOffset = offset;
+  int leftOffset = 0;
+ switch (digit) {
+  case 0:
+    break;
+  case 1:
+    leftOffset = offset;
+    break;
+  case 2:
+    leftOffset = offset * digit;
+    break;
+  case 3:
+    leftOffset = offset * digit;
+    break;
+  case 4:
+    leftOffset = offset * digit;
+    break;
+  case 5:
+    leftOffset = offset * digit;
+    break;
+  case 6:
+    leftOffset = offset * digit;
+    break;
+  case 7:
+    leftOffset = offset * digit;
+    break;
+  case 8:
+    leftOffset = offset * digit;
+    break;
+  case 9:
+    leftOffset = offset * digit;
+    break;
+  case 10:
+    leftOffset = offset * digit;
+    break;
+  }
+  m_sprite.setTextureRect(sf::IntRect(leftOffset,0,(widthOffset),32));
 }
 
 // Setters

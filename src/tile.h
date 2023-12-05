@@ -33,6 +33,7 @@ public:
     void leftClick();       // Reveals tile
     bool isMine();         
 
+    void splitDigitSprite(int digit);
     void setAdjacentMines(int numOfMines);      
     int mine;
     bool overlay = false;    // Determines whether to draw spites on each other

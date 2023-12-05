@@ -13,7 +13,7 @@ class Board
 public:
     // Initial functions / setup
     void setBoardConfig(); 
-    void createBoardData();
+    // void createBoardData();
     void createBoardData(std::string boardFile);
     void buildGameBoard(int width, int height);
     void displayBoardData();
@@ -39,7 +39,7 @@ public:
 
 private:
     std::unordered_map<std::string, Tile> testButtons;
-    int numOfCols, numOfRows, numOfMines, boardSize;
+    int numOfCols, numOfRows, numOfMines, boardSize, numOfFlags;
     std::vector<int> boardData;                                 // Stores the board as a 1-dim flattened array
     std::vector<Tile> gameboard;                                // Vector of tile objects
 };
