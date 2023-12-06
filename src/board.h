@@ -23,10 +23,11 @@ public:
     Tile boardClick(sf::RenderWindow& window, bool Lclick);
     void displayAllMines();
     bool checkWin();
-    void tileNeighborMines();
+    void tileNeighborMines(std::vector<Tile>& gameboard);
     int addAdjacentMines(int i);
     void displayMines();
     void restartGame(std::string boardType);      // The random flag changes the loaded config
+    void changeRemaingingMines();
 
     //Getters
     int getRows();
@@ -38,8 +39,9 @@ public:
     Board();
 
 private:
-    std::unordered_map<std::string, Tile> testButtons;
-    int numOfCols, numOfRows, numOfMines, boardSize, numOfFlags;
+    std::unordered_map<std::string, Tile> funcButtons;
+    int numOfCols, numOfRows, numOfMines, boardSize;
+    int numOfFlags = 0;
     std::vector<int> boardData;                                 // Stores the board as a 1-dim flattened array
     std::vector<Tile> gameboard;                                // Vector of tile objects
 };

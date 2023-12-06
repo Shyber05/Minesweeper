@@ -52,6 +52,7 @@ void Tile::leftClick()
     std::cout <<    "x: " << (m_sprite.getPosition().x / 32) << " "
                     "y: " << (m_sprite.getPosition().y / 32) << "\n";
     std::cout << "Mine: " << mine << " \n";
+    std::cout << "Surrounding Mines: " << adjacentMines << std::endl;
 }
 
 void Tile::rightClick()
