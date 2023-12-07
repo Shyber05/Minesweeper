@@ -35,6 +35,7 @@ public:
     bool isMine();         
 
     void splitDigitSprite(int digit);
+    void resetAdjacentMines();
     void addAdjacentMines(int numOfMines);      
     int mine;
     bool overlay = false;    // Determines whether to draw spites on each other

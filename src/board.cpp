@@ -15,7 +15,7 @@ Board::Board()
 
   //====================================TESTING=================================
   // createBoardData("lots_o_mines");
-  displayBoardData();
+  // displayBoardData();
   // buildGameBoard();
 }
 
@@ -270,6 +270,7 @@ Board::boardClick(sf::RenderWindow& window, bool Lclick)
           funcButtons["Smiley"].setSprite("face_lose");
           displayMines();
         } else {
+          RevealedTiles++;
           revealNeighborMines(i);
         }
       } else {
@@ -316,13 +317,9 @@ Board::setNeighborTiles()
     for (int col = 0; col < numOfCols; col++) {
       // first tile
       if (i != 0 && i != gameboard.size()) {
-        if (col != 0)
-          gameboard[i].adjacentTiles.push_back(&gameboard[i - 1]); // left
-        else
-          gameboard[i].adjacentTiles.push_back(nullptr);
-
-        if (col != numOfCols)
-          gameboard[i].adjacentTiles.push_back(&gameboard[i + 1]); // right
+        if (row != 0 && col != 0)
+          gameboard[i].adjacentTiles.push_back(
+            &gameboard[(i - numOfCols) - 1]); // above left
         else
           gameboard[i].adjacentTiles.push_back(nullptr);
 
@@ -332,15 +329,31 @@ Board::setNeighborTiles()
         else
           gameboard[i].adjacentTiles.push_back(nullptr);
 
-        if (row != numOfRows)
+        if (row != 0 && col != numOfCols)
           gameboard[i].adjacentTiles.push_back(
-            &gameboard[i + numOfCols]); // below
+            &gameboard[(i - numOfCols) + 1]); // above right
         else
           gameboard[i].adjacentTiles.push_back(nullptr);
 
-        if (row != numOfRows && col != 0)
+        if (col != 0)
+          gameboard[i].adjacentTiles.push_back(&gameboard[i - 1]); // left
+        else
+          gameboard[i].adjacentTiles.push_back(nullptr);
+
+        if (col != numOfCols)
+          gameboard[i].adjacentTiles.push_back(&gameboard[i + 1]); // right
+        else
+          gameboard[i].adjacentTiles.push_back(nullptr);
+        
+        if (row != numOfRows && col != 0 )
           gameboard[i].adjacentTiles.push_back(
             &gameboard[(i + numOfCols) - 1]); // below left
+        else
+          gameboard[i].adjacentTiles.push_back(nullptr);
+
+        if (row != numOfRows)
+          gameboard[i].adjacentTiles.push_back(
+            &gameboard[i + numOfCols]); // below
         else
           gameboard[i].adjacentTiles.push_back(nullptr);
 
@@ -350,17 +363,6 @@ Board::setNeighborTiles()
         else
           gameboard[i].adjacentTiles.push_back(nullptr);
 
-        if (row != 0 && col != 0)
-          gameboard[i].adjacentTiles.push_back(
-            &gameboard[(i - numOfCols) - 1]); // above left
-        else
-          gameboard[i].adjacentTiles.push_back(nullptr);
-
-        if (row != 0 && col != numOfCols)
-          gameboard[i].adjacentTiles.push_back(
-            &gameboard[(i - numOfCols) + 1]); // above right
-        else
-          gameboard[i].adjacentTiles.push_back(nullptr);
       } else if (i == 0) {
         gameboard[i].adjacentTiles.push_back(
           &gameboard[(i + numOfCols) + 1]); // below right
@@ -384,7 +386,6 @@ Board::setAdjacentMines()
 {
   for (int i = 0; i < gameboard.size(); i++) {
     for (int j = 0; j < gameboard[i].adjacentTiles.size(); j++) {
-
       if (gameboard[i].adjacentTiles[j] != nullptr) {
         if (gameboard[i].adjacentTiles[j]->isMine()) {
           gameboard[i].addAdjacentMines(1);
@@ -421,12 +422,14 @@ Board::restartGame(std::string boardType)
   boardData.clear();
   createBoardData(boardType); // Loads in a fresh board
   for (int i = 0; i <= gameboard.size(); i++) {
+    gameboard[i].resetAdjacentMines();
     gameboard[i].setMine(boardData[i]); // Make the board blank
     gameboard[i].setState(Tile::State::HIDDEN);
     funcButtons["Smiley"].setSprite("face_happy");
     numOfFlags = 0;
   }
-  displayBoardData();
+  setAdjacentMines();
+  // displayBoardData();    //Testing
 }
 
 //==============================Accessors==================================

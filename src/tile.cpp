@@ -194,6 +194,11 @@ int Tile::getAdjacentMines()
 {
   return adjacentMines;
 }
+
+void Tile::resetAdjacentMines()
+{
+  adjacentMines=0;
+}
 sf::Sprite Tile::getSprite()
 {
     return m_sprite;
