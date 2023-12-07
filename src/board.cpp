@@ -50,23 +50,22 @@ void
 Board::createBoardData(std::string boardFile)
 {
 
-  if (boardFile == "random") 
-  {
+  if (boardFile == "random") {
     // 1. Create from board attributes
     boardData.resize(boardSize);
 
     // Picks positions ar random and places mine
+    int newNumOfMines = 0;
     for (int mines = 0; mines <= (numOfMines); mines++) {
       int pos = RandomGen::intGenerator(
         0, (boardSize)); // Random number between 0 - size of board
       if (boardData[pos] == 0) {
         boardData[pos] = 1;
-      }
-      else 
-      {
+      } else {
         mines--; // If it lands on a mine (1) don't add 1
       }
     }
+
   } else {
     // 2. Create from a .brd file
     std::string dir = "boards/"; // TESTING
@@ -77,25 +76,28 @@ Board::createBoardData(std::string boardFile)
     inputBoard.open(filePath);
 
     char val;
+    int newNumOfMines = 0;
     while (inputBoard.get(val)) {
       // Subtract by 48 to get the ASCII char to int
       if (val == '1') {
         boardData.push_back(((int)val - 48));
+        newNumOfMines++;
       } else if (val == '0') {
         boardData.push_back(((int)val - 48));
       }
     }
+    numOfMines = newNumOfMines;
   }
 }
 
 void
-Board::buildGameBoard(int length, int width)
+Board::buildGameBoard()
 {
   // Creates the game Board of Tiles
+  Tile tile;
   int i = 0;
-  for (int col = 0; col < getCols(); col++) {
-    for (int row = 0; row < getRows(); row++) {
-      Tile tile;
+  for (int row = 0; row < getRows(); row++) {
+    for (int col = 0; col < getCols(); col++) {
       tile.setMine(boardData[i]);
       sf::IntRect spriteRect =
         (tile.getSprite()).getTextureRect(); // Gets the rectangle of the tile
@@ -103,13 +105,16 @@ Board::buildGameBoard(int length, int width)
         (float)(spriteRect.height * col),
         (float)(spriteRect.width * row))); // sets the position of the tile
                                            // based on the previous command
+      tile.index = i;
       gameboard.push_back(tile);
       i++;
     }
   }
-  
-  //Sets each mines neighbors
-  tileNeighborMines(gameboard);
+
+  setNeighborTiles();
+  setAdjacentMines();
+
+  // Sets each mines neighbors
 
   Tile Smiley("face_happy");
   Tile Test1("test_1");
@@ -137,18 +142,17 @@ Board::buildGameBoard(int length, int width)
   Tile Digit0("digits");
   Tile Digit1("digits");
   Tile Digit2("digits");
-  
+
   Digit0.splitDigitSprite(0);
   Digit1.splitDigitSprite(0);
   Digit2.splitDigitSprite(0);
 
-  
   Digit0.setPos(sf::Vector2f((float)(spriteRect.height * 0.3),
-                            (float)(spriteRect.width * 8)));
+                             (float)(spriteRect.width * 8)));
   Digit1.setPos(sf::Vector2f((float)(spriteRect.height * 0.6),
-                            (float)(spriteRect.width * 8)));
+                             (float)(spriteRect.width * 8)));
   Digit2.setPos(sf::Vector2f((float)(spriteRect.height * 0.9),
-                            (float)(spriteRect.width * 8)));
+                             (float)(spriteRect.width * 8)));
 
   // sf::Vector2f((length*0.73),(width-87)),
   funcButtons.emplace("Smiley", Smiley);
@@ -172,6 +176,7 @@ Board::displayBoardData()
   std::cout << "numOfMines: " << numOfMines << "\n";
 
   // {1 (mine) or 0 (not a mine)}
+  std::cout << "BoardData" << std::endl;
   for (int i = 0; i <= boardSize; i++) {
     // TODO fix but, Doesn't account for first value
     std::cout << boardData[i] << " ";
@@ -190,8 +195,15 @@ Board::renderBoard(sf::RenderWindow& window)
   for (int i = 0; i < boardSize; i++) {
     gameboard[i].draw(window);
   }
-       
-  // Renders game buttons 
+
+  // Check win condition
+  if ((boardSize) == (RevealedTiles + numOfMines)) {
+    // Winner
+    funcButtons["Smiley"].setSprite("face_win");
+    displayMines();
+  }
+
+  // Renders game buttons
   funcButtons["Smiley"].draw(window);
   funcButtons["Test1"].draw(window);
   funcButtons["Test2"].draw(window);
@@ -199,7 +211,7 @@ Board::renderBoard(sf::RenderWindow& window)
   funcButtons["Debug"].draw(window);
 
   changeRemaingingMines();
-  
+
   funcButtons["Remaining0"].draw(window);
   funcButtons["Remaining1"].draw(window);
   funcButtons["Remaining2"].draw(window);
@@ -208,34 +220,31 @@ Board::renderBoard(sf::RenderWindow& window)
 void
 Board::changeRemaingingMines()
 {
-  //Changes the "Remaining" button, shows the remaining mines on the board, Changes
-  //when flags are added to screen
+  // Changes the "Remaining" button, shows the remaining mines on the board,
+  // Changes when flags are added to screen
   int remainingMines = numOfMines - numOfFlags;
-  int onesPlace = 0; 
-  int tensPlace = 0; 
-  int hundredsPlace = 0; 
-  
-  if (remainingMines >= 0)
-  {
-    onesPlace = remainingMines % 10;  
+  int onesPlace = 0;
+  int tensPlace = 0;
+  int hundredsPlace = 0;
+
+  if (remainingMines >= 0) {
+    onesPlace = remainingMines % 10;
     tensPlace = ((remainingMines % 100 - onesPlace) / 10);
     hundredsPlace = ((remainingMines % 1000 - (tensPlace + onesPlace)) / 100);
-    
+
     funcButtons["Remaining0"].splitDigitSprite(hundredsPlace);
     funcButtons["Remaining1"].splitDigitSprite(tensPlace);
     funcButtons["Remaining2"].splitDigitSprite(onesPlace);
-  } else if (remainingMines < 0)
-  {
+  } else if (remainingMines < 0) {
     remainingMines = (remainingMines * (-1));
-    onesPlace = remainingMines % 10;  
+    onesPlace = remainingMines % 10;
     tensPlace = ((remainingMines % 100 - onesPlace) / 10);
-    
+
     funcButtons["Remaining0"].splitDigitSprite(10);
     funcButtons["Remaining1"].splitDigitSprite(tensPlace);
     funcButtons["Remaining2"].splitDigitSprite(onesPlace);
   }
 }
-
 
 Tile
 Board::boardClick(sf::RenderWindow& window, bool Lclick)
@@ -256,34 +265,33 @@ Board::boardClick(sf::RenderWindow& window, bool Lclick)
     if (sprite.getGlobalBounds().contains(translatedPos)) {
       if (Lclick) {
         gameboard[i].leftClick();
+        if (gameboard[i].isMine()) {
+          // Game Over
+          funcButtons["Smiley"].setSprite("face_lose");
+          displayMines();
+        } else {
+          revealNeighborMines(i);
+        }
       } else {
-          if ((gameboard[i].getState() == Tile::State::FLAGGED))
-            numOfFlags--;
-          else
-            numOfFlags++;
-          gameboard[i].rightClick();
+        if ((gameboard[i].getState() == Tile::State::FLAGGED))
+          numOfFlags--;
+        else
+          numOfFlags++;
+        gameboard[i].rightClick();
       }
       return (gameboard[i]);
     }
   }
   if (smiley.getGlobalBounds().contains(translatedPos)) {
-    // std::cout << "Smiley was pressed" << std::endl;
+    setBoardConfig();
     restartGame("random");
-    // createBoardData("random");
   } else if (test_1.getGlobalBounds().contains(translatedPos)) {
-    // std::cout << "Test 1 was pressed" << std::endl;
     restartGame("testboard1");
-    // createBoardData("testboard1");
   } else if (test_2.getGlobalBounds().contains(translatedPos)) {
-    // std::cout << "Test 2 was pressed" << std::endl;
     restartGame("testboard2");
-    // createBoardData("testboard2");
   } else if (test_3.getGlobalBounds().contains(translatedPos)) {
-    // std::cout << "Test 3 was pressed" << std::endl;
     restartGame("testboard3");
-    // createBoardData("testboard3");
   } else if (debug.getGlobalBounds().contains(translatedPos)) {
-    // std::cout << "Debug was pressed" << std::endl;
     displayMines();
   }
 
@@ -295,95 +303,113 @@ Board::displayMines()
 {
   // Sets all the mines on the board to State::EXPLODED
   for (int i = 0; i < getGameBoard().size(); i++) {
-    // if (gameboard[i].isMine())
-    if (boardData[i] == 1)
+    if (gameboard[i].isMine())
       gameboard[i].setState(Tile::State::EXPLODED);
   }
 }
 
 void
-Board::tileNeighborMines(std::vector<Tile>& board){
-  //TODO fix function
-  //Determines the number of surrounding Mines on a tile
-  int neighborMines = 0;
-  
-  std::cout << "gameboard size: " << gameboard.size() << std::endl;
+Board::setNeighborTiles()
+{
   int i = 0;
-  for (int row=0; row < numOfRows; row++)
-  {
-    for (int col=0; col < numOfCols; col++)
-    {
-      //Possible of 8 total surrounding mines
-      if ((i > 0) && (i < gameboard.size())){
-        if ((boardData[i - 1] == 1) && (col != 0))                  //left
-          std::cout << "left " << std::endl;
-          // neighborMines++;
-        if ((boardData[i + 1] == 1) && (col != numOfCols))          //right
-          std::cout << "right " << std::endl;
-          // neighborMines++;
-        
-        //check for first Row
+  for (int row = 0; row < numOfRows; row++) {
+    for (int col = 0; col < numOfCols; col++) {
+      // first tile
+      if (i != 0 && i != gameboard.size()) {
+        if (col != 0)
+          gameboard[i].adjacentTiles.push_back(&gameboard[i - 1]); // left
+        else
+          gameboard[i].adjacentTiles.push_back(nullptr);
+
+        if (col != numOfCols)
+          gameboard[i].adjacentTiles.push_back(&gameboard[i + 1]); // right
+        else
+          gameboard[i].adjacentTiles.push_back(nullptr);
+
         if (row != 0)
-        {
-          if ((boardData[i - numOfCols]) == 1)                      //above 
-            std::cout << "above " << std::endl;
-            // neighborMines++;
-          // 
-          //check for first Col
-          if (col != 0)
-          {
-            if ((boardData[(i - numOfCols) - 1]) == 1)              //above left
-          std::cout << "above left " << std::endl;
-              // neighborMines++;
-            if ((boardData[(i - numOfCols) + 1]) == 1)              //above right
-          std::cout << "above right " << std::endl;
-              // neighborMines++;
-          }
-        }
-        
-        //check for last row
+          gameboard[i].adjacentTiles.push_back(
+            &gameboard[i - numOfCols]); // above
+        else
+          gameboard[i].adjacentTiles.push_back(nullptr);
+
         if (row != numOfRows)
-        {
-          if ((boardData[(i + numOfCols) + 1]) == 1)                //below right
-            std::cout << "below right " << std::endl;
-            // neighborMines++;
-          //check for last col
-          if (col != numOfCols)
-          {
-            if ((boardData[(i + numOfCols) - 1]) == 1)              //below left
-              std::cout << "below left " << std::endl;
-              // neighborMines++;
-            if ((boardData[(i + numOfCols)]) == 1)                  //below
-              std::cout << "below  " << std::endl;
-              // neighborMines++;
-          }
-        }
+          gameboard[i].adjacentTiles.push_back(
+            &gameboard[i + numOfCols]); // below
+        else
+          gameboard[i].adjacentTiles.push_back(nullptr);
+
+        if (row != numOfRows && col != 0)
+          gameboard[i].adjacentTiles.push_back(
+            &gameboard[(i + numOfCols) - 1]); // below left
+        else
+          gameboard[i].adjacentTiles.push_back(nullptr);
+
+        if (row != numOfRows && col != numOfCols)
+          gameboard[i].adjacentTiles.push_back(
+            &gameboard[(i + numOfCols) + 1]); // below right
+        else
+          gameboard[i].adjacentTiles.push_back(nullptr);
+
+        if (row != 0 && col != 0)
+          gameboard[i].adjacentTiles.push_back(
+            &gameboard[(i - numOfCols) - 1]); // above left
+        else
+          gameboard[i].adjacentTiles.push_back(nullptr);
+
+        if (row != 0 && col != numOfCols)
+          gameboard[i].adjacentTiles.push_back(
+            &gameboard[(i - numOfCols) + 1]); // above right
+        else
+          gameboard[i].adjacentTiles.push_back(nullptr);
+      } else if (i == 0) {
+        gameboard[i].adjacentTiles.push_back(
+          &gameboard[(i + numOfCols) + 1]); // below right
+        gameboard[i].adjacentTiles.push_back(
+          &gameboard[i + numOfCols]);                            // below
+        gameboard[i].adjacentTiles.push_back(&gameboard[i + 1]); // right
+      } else if (i == gameboard.size()) {
+        gameboard[i].adjacentTiles.push_back(&gameboard[i - 1]); // left
+        gameboard[i].adjacentTiles.push_back(
+          &gameboard[(i - numOfCols) + 1]); // above right
+        gameboard[i].adjacentTiles.push_back(
+          &gameboard[i - numOfCols]); // above
       }
-      else if (i == 0)     // Initial Tile
-      {
-        
-        if ((boardData[i + 1]) == 1)                          
-          neighborMines++;
-        if ((boardData[(numOfCols + i)]) == 1)                 
-          neighborMines++;
-        if ((boardData[(numOfCols + i) + 1]) == 1)              
-          neighborMines++;
-      }
-      else if (i == boardData.size())       //Final tile
-        {
-        if ((boardData[i - 1]) == 1)                             
-          neighborMines++;
-        if ((boardData[(i - numOfCols) - 1]) == 1)  
-          neighborMines++;
-        if ((boardData[i - numOfCols]) == 1)       
-          neighborMines++;
-        }
-      
-      // std::cout << "index: " << i << " neighbor mines " << neighborMines << std::endl;
-      std::cout << "index: " << i << std::endl;
-      gameboard[i].setAdjacentMines(neighborMines);
       i++;
-      neighborMines = 0;
+    }
+  }
+}
+
+void
+Board::setAdjacentMines()
+{
+  for (int i = 0; i < gameboard.size(); i++) {
+    for (int j = 0; j < gameboard[i].adjacentTiles.size(); j++) {
+
+      if (gameboard[i].adjacentTiles[j] != nullptr) {
+        if (gameboard[i].adjacentTiles[j]->isMine()) {
+          gameboard[i].addAdjacentMines(1);
+        }
+      }
+    }
+  }
+}
+
+void
+Board::revealNeighborMines(int index)
+{
+  // Base case
+  if (gameboard[index].getAdjacentMines() > 0)
+    return;
+  else {
+    for (int i = 0; i < gameboard[index].adjacentTiles.size(); i++) {
+      if (gameboard[index].adjacentTiles[i] != nullptr) {
+        if ((gameboard[index].adjacentTiles[i]->isMine() == false) &&
+            gameboard[index].adjacentTiles[i]->getState() !=
+              (Tile::State::REVEALED)) {
+          gameboard[index].adjacentTiles[i]->setState(Tile::State::REVEALED);
+          revealNeighborMines(gameboard[index].adjacentTiles[i]->index);
+        }
+      }
     }
   }
 }

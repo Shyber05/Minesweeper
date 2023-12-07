@@ -43,7 +43,7 @@ int
 launch(sf::RenderWindow& window, int LENGTH, int WIDTH)
 {
   Board board;
-  board.buildGameBoard(LENGTH, WIDTH);
+  board.buildGameBoard();
   while (window.isOpen()) {
     
     eventHandling(window, board);
@@ -98,17 +98,3 @@ void
 resetGame(Board& board, int width, int height)
 {
 }
-
-// ============================LEGACY=========================================
-/*
-void renderBoard(sf::RenderWindow& window, Board& board)
-{
-    std::vector<Tile> gameBoard = board.getGameBoard();
-
-    for (int i=0; i < (gameBoard.size()); i++)
-    {
-        sf::Sprite tileSprite = gameBoard[i].getSprite();
-        window.draw(tileSprite);
-    }
-}
-*/

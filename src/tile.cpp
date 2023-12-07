@@ -28,7 +28,7 @@ void Tile::draw(sf::RenderWindow& window)
     window.draw(m_overlaySprite);
 }
 
-void Tile::setAdjacentMines(int numOfMines)
+void Tile::addAdjacentMines(int numOfMines)
 {
     adjacentMines += numOfMines;
 }
@@ -48,11 +48,12 @@ void Tile::leftClick()
     }
   }
 
-    //TESTING  
-    std::cout <<    "x: " << (m_sprite.getPosition().x / 32) << " "
-                    "y: " << (m_sprite.getPosition().y / 32) << "\n";
-    std::cout << "Mine: " << mine << " \n";
-    std::cout << "Surrounding Mines: " << adjacentMines << std::endl;
+    //=========================TESTING==============================  
+    // std::cout <<    "x: " << (m_sprite.getPosition().x / 32) << " "
+                    // "y: " << (m_sprite.getPosition().y / 32) << "\n";
+    // std::cout << "Mine: " << mine << " \n";
+    // std::cout << "Surrounding Mines: " << adjacentMines << std::endl;
+    // std::cout << "Index: " << index << std::endl;
 }
 
 void Tile::rightClick()
@@ -146,6 +147,25 @@ void Tile::setOverlaySprite(std::string imagePath)
     m_overlaySprite.setTexture(TextureManager::getTexture(imagePath));
 }
 
+void Tile::setNumberOverlay(){
+  if (adjacentMines == 1)
+    setOverlaySprite("number_1");
+  else if (adjacentMines == 2)
+    setOverlaySprite("number_2");
+  else if (adjacentMines == 3)
+    setOverlaySprite("number_3");
+  else if (adjacentMines == 4)
+    setOverlaySprite("number_4");
+  else if (adjacentMines == 5)
+    setOverlaySprite("number_5");
+  else if (adjacentMines == 6)
+    setOverlaySprite("number_6");
+  else if (adjacentMines == 7)
+    setOverlaySprite("number_7");
+  else if (adjacentMines == 8)
+    setOverlaySprite("number_8");
+}
+
 void Tile::setState(Tile::State state)
 {
     std::string spriteImg;
@@ -154,7 +174,7 @@ void Tile::setState(Tile::State state)
         spriteImg = "tile_hidden";
     }
     else if (state == REVEALED){
-        setOverlaySprite("number_1");      // Needs to be number of surrounding mines
+        setNumberOverlay();
         spriteImg = "tile_revealed";
     }
     else if (state == FLAGGED){
@@ -170,6 +190,10 @@ void Tile::setState(Tile::State state)
 }
 
 // Getters
+int Tile::getAdjacentMines()
+{
+  return adjacentMines;
+}
 sf::Sprite Tile::getSprite()
 {
     return m_sprite;

@@ -20,6 +20,7 @@ public:
     void setPos(sf::Vector2f vector);
     void setSprite(std::string);
     void setOverlaySprite(std::string imagePath);
+    void setNumberOverlay();
 
     //Getters
     State getState(); 
@@ -34,10 +35,12 @@ public:
     bool isMine();         
 
     void splitDigitSprite(int digit);
-    void setAdjacentMines(int numOfMines);      
+    void addAdjacentMines(int numOfMines);      
     int mine;
     bool overlay = false;    // Determines whether to draw spites on each other
     sf::Sprite m_overlaySprite;
+    std::vector<Tile*> adjacentTiles;
+    int index;    // Used to help with letting the tile know it's place in the gameboard
 
 private:
     int adjacentMines = 0;
