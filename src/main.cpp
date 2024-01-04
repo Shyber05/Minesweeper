@@ -1,21 +1,13 @@
 #include "board.h"
-#include "randomGen.h"
 #include "textureManager.h"
-#include "tile.h"
 #include <SFML/Graphics.hpp>
-#include <fstream>
-#include <iostream>
-#include <stdexcept>
-#include <unordered_map>
-#include <vector>
+#include "iostream"
 
 // =================================Prototypes================================
 int
 launch(sf::RenderWindow& window, int LENGTH, int WIDTH);
 void
 eventHandling(sf::RenderWindow& window, Board& board);
-void
-resetGame(Board& board, int width, int height);
 
 int
 main()
@@ -94,7 +86,4 @@ eventHandling(sf::RenderWindow& window, Board& board)
   }
 }
 
-void
-resetGame(Board& board, int width, int height)
-{
-}
+

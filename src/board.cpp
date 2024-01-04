@@ -1,8 +1,6 @@
 #include "board.h"
 #include "randomGen.h"
-#include "textureManager.h"
 #include <SFML/Graphics.hpp>
-#include <array>
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -56,7 +54,7 @@ Board::createBoardData(std::string boardFile)
 
     // Picks positions ar random and places mine
     int newNumOfMines = 0;
-    for (int mines = 0; mines <= (numOfMines); mines++) {
+    for (int mines = 0; mines < (numOfMines); mines++) {
       int pos = RandomGen::intGenerator(
         0, (boardSize)); // Random number between 0 - size of board
       if (boardData[pos] == 0) {
@@ -125,7 +123,6 @@ Board::buildGameBoard()
     (Smiley.getSprite())
       .getTextureRect(); // Gets the rectangle for the test buttons
 
-  // TODO need to fix the values above so they aren't hard coded
   // Set position of these similarly sized buttons (Hard Coded)
   Smiley.setPos(sf::Vector2f((float)(spriteRect.height * 6),
                              (float)(spriteRect.width * 8)));
@@ -154,7 +151,6 @@ Board::buildGameBoard()
   Digit2.setPos(sf::Vector2f((float)(spriteRect.height * 0.9),
                              (float)(spriteRect.width * 8)));
 
-  // sf::Vector2f((length*0.73),(width-87)),
   funcButtons.emplace("Smiley", Smiley);
   funcButtons.emplace("Test1", Test1);
   funcButtons.emplace("Test2", Test2);
@@ -169,12 +165,7 @@ void
 Board::displayBoardData()
 {
   // Displays the boards information
-  // ===================TESTING====================
-  std::cout << "BoardSize: " << boardSize << "\n";
-  std::cout << "numOfRows: " << numOfRows << "\n";
-  std::cout << "numOfCols: " << numOfCols << "\n";
-  std::cout << "numOfMines: " << numOfMines << "\n";
-
+   
   // {1 (mine) or 0 (not a mine)}
   std::cout << "BoardData" << std::endl;
   for (int i = 0; i <= boardSize; i++) {
@@ -197,10 +188,10 @@ Board::renderBoard(sf::RenderWindow& window)
   }
 
   // Check win condition
-  if ((boardSize) == (RevealedTiles + numOfMines)) {
+  if ((boardSize) == (RevealedTiles + (numOfMines))) {
     // Winner
     funcButtons["Smiley"].setSprite("face_win");
-    displayMines();
+    gameover = true;
   }
 
   // Renders game buttons
@@ -263,22 +254,29 @@ Board::boardClick(sf::RenderWindow& window, bool Lclick)
   for (int i = 0; i < gameboard.size(); i++) {
     sf::Sprite sprite = gameboard[i].getSprite();
     if (sprite.getGlobalBounds().contains(translatedPos)) {
-      if (Lclick) {
-        gameboard[i].leftClick();
-        if (gameboard[i].isMine()) {
-          // Game Over
-          funcButtons["Smiley"].setSprite("face_lose");
-          displayMines();
+      if (gameover != true) {
+        if (Lclick) {
+          std::cout << "NumOfMines: " << numOfMines << std::endl;
+          std::cout << "RevealedTiles: " << RevealedTiles << std::endl;
+          std::cout << "BoardSize: " << boardSize << std::endl;
+          gameboard[i].leftClick();
+          if (gameboard[i].isMine()) {
+            // Game Over
+            gameboard[i].setState(Tile::State::REVEALED);
+            funcButtons["Smiley"].setSprite("face_lose");
+            displayMines();
+            gameover = true;
+          } else {
+              RevealedTiles++;
+              revealNeighborMines(i);
+          }
         } else {
-          RevealedTiles++;
-          revealNeighborMines(i);
+          if ((gameboard[i].getState() == Tile::State::FLAGGED))
+            numOfFlags--;
+          else
+            numOfFlags++;
+          gameboard[i].rightClick();
         }
-      } else {
-        if ((gameboard[i].getState() == Tile::State::FLAGGED))
-          numOfFlags--;
-        else
-          numOfFlags++;
-        gameboard[i].rightClick();
       }
       return (gameboard[i]);
     }
@@ -302,13 +300,20 @@ Board::boardClick(sf::RenderWindow& window, bool Lclick)
 void
 Board::displayMines()
 {
+  // Toggles Debug button
   // Sets all the mines on the board to State::EXPLODED
   for (int i = 0; i < getGameBoard().size(); i++) {
-    if (gameboard[i].isMine())
+    if (gameboard[i].isMine() &&
+        gameboard[i].getState() != Tile::State::EXPLODED)
       gameboard[i].setState(Tile::State::EXPLODED);
+    else if (gameboard[i].isMine()) {
+      gameboard[i].setState(Tile::State::HIDDEN);
+    };
   }
 }
 
+// BUG revealed tiles tend to wrap around board
+// Tiles affected Bottom row, right most column,
 void
 Board::setNeighborTiles()
 {
@@ -344,20 +349,20 @@ Board::setNeighborTiles()
           gameboard[i].adjacentTiles.push_back(&gameboard[i + 1]); // right
         else
           gameboard[i].adjacentTiles.push_back(nullptr);
-        
-        if (row != numOfRows && col != 0 )
+
+        if (row != (numOfRows -1)  && col != 0)
           gameboard[i].adjacentTiles.push_back(
             &gameboard[(i + numOfCols) - 1]); // below left
         else
           gameboard[i].adjacentTiles.push_back(nullptr);
 
-        if (row != numOfRows)
+        if (row != (numOfRows-1))
           gameboard[i].adjacentTiles.push_back(
             &gameboard[i + numOfCols]); // below
         else
           gameboard[i].adjacentTiles.push_back(nullptr);
 
-        if (row != numOfRows && col != numOfCols)
+        if (row != (numOfRows-1) && col != numOfCols)
           gameboard[i].adjacentTiles.push_back(
             &gameboard[(i + numOfCols) + 1]); // below right
         else
@@ -404,10 +409,10 @@ Board::revealNeighborMines(int index)
   else {
     for (int i = 0; i < gameboard[index].adjacentTiles.size(); i++) {
       if (gameboard[index].adjacentTiles[i] != nullptr) {
-        if ((gameboard[index].adjacentTiles[i]->isMine() == false) &&
-            gameboard[index].adjacentTiles[i]->getState() !=
-              (Tile::State::REVEALED)) {
+        if ((gameboard[index].adjacentTiles[i]->isMine() == false) && gameboard[index].adjacentTiles[i]->getState() != (Tile::State::REVEALED)) 
+        {
           gameboard[index].adjacentTiles[i]->setState(Tile::State::REVEALED);
+          RevealedTiles++;
           revealNeighborMines(gameboard[index].adjacentTiles[i]->index);
         }
       }
@@ -427,6 +432,7 @@ Board::restartGame(std::string boardType)
     gameboard[i].setState(Tile::State::HIDDEN);
     funcButtons["Smiley"].setSprite("face_happy");
     numOfFlags = 0;
+    gameover = false;
   }
   setAdjacentMines();
   // displayBoardData();    //Testing

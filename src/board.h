@@ -44,4 +44,5 @@ private:
     int RevealedTiles = 0;
     std::vector<int> boardData;                                 // Stores the board as a 1-dim flattened array
     std::vector<Tile> gameboard;                                // Vector of tile objects
+    bool gameover = false;
 };
