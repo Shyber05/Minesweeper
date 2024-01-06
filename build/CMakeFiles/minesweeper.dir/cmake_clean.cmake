@@ -1,4 +1,6 @@
 file(REMOVE_RECURSE
+  "/home/brs/UF/COP3503C/projects/p3/Project_Minesweeper/minesweeper"
+  "/home/brs/UF/COP3503C/projects/p3/Project_Minesweeper/minesweeper.pdb"
   "CMakeFiles/minesweeper.dir/src/board.cpp.o"
   "CMakeFiles/minesweeper.dir/src/board.cpp.o.d"
   "CMakeFiles/minesweeper.dir/src/main.cpp.o"
@@ -9,8 +11,6 @@ file(REMOVE_RECURSE
   "CMakeFiles/minesweeper.dir/src/textureManager.cpp.o.d"
   "CMakeFiles/minesweeper.dir/src/tile.cpp.o"
   "CMakeFiles/minesweeper.dir/src/tile.cpp.o.d"
-  "minesweeper"
-  "minesweeper.pdb"
 )
 
 # Per-language clean rules from dependency scanning.

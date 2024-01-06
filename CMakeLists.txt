@@ -14,6 +14,7 @@ add_executable(${EXECUTABLE_NAME} src/main.cpp src/textureManager.cpp src/random
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake_modules" ${CMAKE_MODULE_PATH})
 find_package(SFML 2.5 COMPONENTS graphics audio network window REQUIRED)
 target_link_libraries(${EXECUTABLE_NAME} sfml-network sfml-audio sfml-graphics sfml-window sfml-system)
+set(EXECUTABLE_OUTPUT_PATH ../)
 
 set(CPACK_PACKAGE_VERSION_MINOR "${myproject_VERSION_MINOR}")
 include(CPack)
