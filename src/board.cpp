@@ -186,7 +186,10 @@ Board::renderBoard(sf::RenderWindow& window)
   for (int i = 0; i < boardSize; i++) {
     gameboard[i].draw(window);
   }
-
+  
+  // std::cout << "BoardSize: " << boardSize << std::endl;
+  // std::cout << "RevealedTiles: " << RevealedTiles << std::endl;
+  // std::cout << "numOfMines: " << numOfMines << std::endl;
   // Check win condition
   if ((boardSize) == (RevealedTiles + (numOfMines))) {
     // Winner
@@ -256,10 +259,14 @@ Board::boardClick(sf::RenderWindow& window, bool Lclick)
     if (sprite.getGlobalBounds().contains(translatedPos)) {
       if (gameover != true) {
         if (Lclick) {
+
+          // /*
+          //Testing
           std::cout << "NumOfMines: " << numOfMines << std::endl;
           std::cout << "RevealedTiles: " << RevealedTiles << std::endl;
           std::cout << "BoardSize: " << boardSize << std::endl;
-          gameboard[i].leftClick();
+          // */
+
           if (gameboard[i].isMine()) {
             // Game Over
             gameboard[i].setState(Tile::State::REVEALED);
@@ -267,8 +274,11 @@ Board::boardClick(sf::RenderWindow& window, bool Lclick)
             displayMines();
             gameover = true;
           } else {
+            if (gameboard[i].getState() == Tile::State::HIDDEN){
               RevealedTiles++;
-              revealNeighborMines(i);
+            }
+            revealNeighborMines(i);
+            gameboard[i].leftClick();
           }
         } else {
           if ((gameboard[i].getState() == Tile::State::FLAGGED))
@@ -432,6 +442,7 @@ Board::restartGame(std::string boardType)
     gameboard[i].setState(Tile::State::HIDDEN);
     funcButtons["Smiley"].setSprite("face_happy");
     numOfFlags = 0;
+    RevealedTiles = 0;
     gameover = false;
   }
   setAdjacentMines();

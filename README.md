@@ -52,6 +52,20 @@ test/debug various features of the game. It reveals all the mines on the board.
 _Test Buttons #1-3:_ Clicking on these loads a file with a specific board
 layout. Mainly used in testing to make sure certain board configs acted appropriate.
 
-
 ---
+
+### Build instructions
+ 
+I used [CMake](https://cmake.org/) for the build process so the steps to create the executable are as follows 
+Start in the base directory
+
+    cd build
+    cmake ..
+    make
+    cd ..
+    ./minesweeper
+
+
+This puts all the Cmake build files in the _build_ directory and the executable in the base directory.
+
 
