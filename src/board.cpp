@@ -265,6 +265,7 @@ Board::boardClick(sf::RenderWindow& window, bool Lclick)
           std::cout << "NumOfMines: " << numOfMines << std::endl;
           std::cout << "RevealedTiles: " << RevealedTiles << std::endl;
           std::cout << "BoardSize: " << boardSize << std::endl;
+          std::cout << "AdjacentMines: " << gameboard[i].getAdjacentMines() << std::endl;
           // */
 
           if (gameboard[i].isMine()) {
@@ -274,9 +275,6 @@ Board::boardClick(sf::RenderWindow& window, bool Lclick)
             displayMines();
             gameover = true;
           } else {
-            if (gameboard[i].getState() == Tile::State::HIDDEN){
-              RevealedTiles++;
-            }
             revealNeighborMines(i);
             gameboard[i].leftClick();
           }
@@ -344,7 +342,7 @@ Board::setNeighborTiles()
         else
           gameboard[i].adjacentTiles.push_back(nullptr);
 
-        if (row != 0 && col != numOfCols)
+        if (row != 0 && col != (numOfCols -1))
           gameboard[i].adjacentTiles.push_back(
             &gameboard[(i - numOfCols) + 1]); // above right
         else
@@ -355,7 +353,7 @@ Board::setNeighborTiles()
         else
           gameboard[i].adjacentTiles.push_back(nullptr);
 
-        if (col != numOfCols)
+        if (col != numOfCols - 1)
           gameboard[i].adjacentTiles.push_back(&gameboard[i + 1]); // right
         else
           gameboard[i].adjacentTiles.push_back(nullptr);
@@ -372,7 +370,7 @@ Board::setNeighborTiles()
         else
           gameboard[i].adjacentTiles.push_back(nullptr);
 
-        if (row != (numOfRows-1) && col != numOfCols)
+        if (row != (numOfRows-1) && col != (numOfCols-1))
           gameboard[i].adjacentTiles.push_back(
             &gameboard[(i + numOfCols) + 1]); // below right
         else
@@ -410,12 +408,14 @@ Board::setAdjacentMines()
   }
 }
 
+//BUG Adding an additional RevealedTiles (not sure why)
 void
 Board::revealNeighborMines(int index)
 {
-  // Base case
-  if (gameboard[index].getAdjacentMines() > 0)
+  // Base case when mines are nearby we exit recursion
+  if (gameboard[index].getAdjacentMines() > 0){
     return;
+  }
   else {
     for (int i = 0; i < gameboard[index].adjacentTiles.size(); i++) {
       if (gameboard[index].adjacentTiles[i] != nullptr) {

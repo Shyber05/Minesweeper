@@ -1,10 +1,8 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Graphics/Sprite.hpp>
-#include <vector>
 #include <iostream>
 #include "tile.h"
 #include "textureManager.h"
-#include "board.h"
 
 //Constructor
 Tile::Tile()
