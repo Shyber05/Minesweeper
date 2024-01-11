@@ -165,14 +165,13 @@ void
 Board::displayBoardData()
 {
   // Displays the boards information
-   
+
   // {1 (mine) or 0 (not a mine)}
   std::cout << "BoardData" << std::endl;
   for (int i = 0; i <= boardSize; i++) {
     // TODO fix but, Doesn't account for first value
     std::cout << boardData[i] << " ";
     if (((i % numOfCols) == 0)) {
-
       std::cout << "Row: " << (i / numOfCols); // TESTING
       std::cout << "\n";
     }
@@ -186,7 +185,7 @@ Board::renderBoard(sf::RenderWindow& window)
   for (int i = 0; i < boardSize; i++) {
     gameboard[i].draw(window);
   }
-  
+
   // std::cout << "BoardSize: " << boardSize << std::endl;
   // std::cout << "RevealedTiles: " << RevealedTiles << std::endl;
   // std::cout << "numOfMines: " << numOfMines << std::endl;
@@ -260,14 +259,6 @@ Board::boardClick(sf::RenderWindow& window, bool Lclick)
       if (gameover != true) {
         if (Lclick) {
 
-          // /*
-          //Testing
-          std::cout << "NumOfMines: " << numOfMines << std::endl;
-          std::cout << "RevealedTiles: " << RevealedTiles << std::endl;
-          std::cout << "BoardSize: " << boardSize << std::endl;
-          std::cout << "AdjacentMines: " << gameboard[i].getAdjacentMines() << std::endl;
-          // */
-
           if (gameboard[i].isMine()) {
             // Game Over
             gameboard[i].setState(Tile::State::REVEALED);
@@ -286,6 +277,15 @@ Board::boardClick(sf::RenderWindow& window, bool Lclick)
           gameboard[i].rightClick();
         }
       }
+      // /*
+      // Testing
+      std::cout << "NumOfMines: " << numOfMines << std::endl;
+      std::cout << "RevealedTiles: " << RevealedTiles << std::endl;
+      std::cout << "BoardSize: " << boardSize << std::endl;
+      std::cout << "AdjacentMines: " << gameboard[i].getAdjacentMines()
+                << std::endl;
+      // */
+
       return (gameboard[i]);
     }
   }
@@ -342,7 +342,7 @@ Board::setNeighborTiles()
         else
           gameboard[i].adjacentTiles.push_back(nullptr);
 
-        if (row != 0 && col != (numOfCols -1))
+        if (row != 0 && col != (numOfCols - 1))
           gameboard[i].adjacentTiles.push_back(
             &gameboard[(i - numOfCols) + 1]); // above right
         else
@@ -358,19 +358,19 @@ Board::setNeighborTiles()
         else
           gameboard[i].adjacentTiles.push_back(nullptr);
 
-        if (row != (numOfRows -1)  && col != 0)
+        if (row != (numOfRows - 1) && col != 0)
           gameboard[i].adjacentTiles.push_back(
             &gameboard[(i + numOfCols) - 1]); // below left
         else
           gameboard[i].adjacentTiles.push_back(nullptr);
 
-        if (row != (numOfRows-1))
+        if (row != (numOfRows - 1))
           gameboard[i].adjacentTiles.push_back(
             &gameboard[i + numOfCols]); // below
         else
           gameboard[i].adjacentTiles.push_back(nullptr);
 
-        if (row != (numOfRows-1) && col != (numOfCols-1))
+        if (row != (numOfRows - 1) && col != (numOfCols - 1))
           gameboard[i].adjacentTiles.push_back(
             &gameboard[(i + numOfCols) + 1]); // below right
         else
@@ -408,19 +408,19 @@ Board::setAdjacentMines()
   }
 }
 
-//BUG Adding an additional RevealedTiles (not sure why)
+// BUG Adding an additional RevealedTiles (not sure why)
 void
 Board::revealNeighborMines(int index)
 {
   // Base case when mines are nearby we exit recursion
-  if (gameboard[index].getAdjacentMines() > 0){
+  if (gameboard[index].getAdjacentMines() > 0) {
     return;
-  }
-  else {
+  } else {
     for (int i = 0; i < gameboard[index].adjacentTiles.size(); i++) {
       if (gameboard[index].adjacentTiles[i] != nullptr) {
-        if ((gameboard[index].adjacentTiles[i]->isMine() == false) && gameboard[index].adjacentTiles[i]->getState() != (Tile::State::REVEALED)) 
-        {
+        if ((gameboard[index].adjacentTiles[i]->isMine() == false) &&
+            gameboard[index].adjacentTiles[i]->getState() !=
+              (Tile::State::REVEALED)) {
           gameboard[index].adjacentTiles[i]->setState(Tile::State::REVEALED);
           RevealedTiles++;
           revealNeighborMines(gameboard[index].adjacentTiles[i]->index);
