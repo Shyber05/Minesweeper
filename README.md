@@ -59,6 +59,7 @@ layout. Mainly used in testing to make sure certain board configs acted appropri
 I used [CMake](https://cmake.org/) for the build process so the steps to create the executable are as follows 
 Start in the base directory
 
+    mkdir build
     cd build
     cmake ..
     make
